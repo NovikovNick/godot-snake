@@ -153,3 +153,6 @@ godot-cpp/
 *.exe
 *.out
 *.app
+
+# cmake
+out

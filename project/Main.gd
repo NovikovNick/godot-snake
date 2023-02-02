@@ -1,8 +1,8 @@
 extends Node
 
-const Simple = preload("res://bin/simple.gdns")
+const Board = preload("res://bin/snake_board.gdns")
 
-onready var simple_instance = Simple.new()
+onready var board_instance = Board.new()
 
 # Declare member variables here. Examples:
 # var a = 2
@@ -11,17 +11,9 @@ onready var simple_instance = Simple.new()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	print("Apple => " + str(board_instance.get_cell_tile_index(1,2)));
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
-
-
-func _on_Sprite_position_changed(node, new_pos):
-	print("The position of " + node.name + " is now " + str(new_pos))
-
-
-func _on_SampleButton_pressed():
-	$Label.text = "C++ code says: " + simple_instance.get_data()
