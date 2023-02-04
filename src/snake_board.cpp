@@ -1,6 +1,6 @@
 #include "snake_board.h"
 
-#include "model/snake_index.h"
+#include "model/tile_index.h"
 
 using namespace godot;
 
@@ -12,5 +12,5 @@ void Board::_register_methods() {
 void Board::_init() {}
 
 int Board::get_cell_tile_index(const int x, const int y) {
-  return static_cast<int>(snake::SNAKE_INDEX::APPLE);
+  return static_cast<int>(snake::TILE_INDEX::APPLE);
 }
