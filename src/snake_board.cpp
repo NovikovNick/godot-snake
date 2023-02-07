@@ -1,6 +1,6 @@
 #include "snake_board.h"
 
-#include "model/tile_index.h"
+#include "model/tile.h"
 
 using namespace godot;
 

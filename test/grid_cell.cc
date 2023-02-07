@@ -2,6 +2,8 @@
 #define CASE_1 1
 #define CASE_2 1
 #define CASE_3 1
+#define CASE_4 1
+#define CASE_5 1
 #define DEBUG 1
 
 #include "../src/model/grid_cell.h"
@@ -13,81 +15,73 @@
 #if CASE_1
 BOOST_AUTO_TEST_CASE(case1) {
   // arrange
-  snake::GridCell cell = 1;
-
-  // act && assert
-  BOOST_CHECK(cell.isEmpty());
-
-  cell.setEmpty(true);
-  BOOST_CHECK(cell.isEmpty());
-
-  cell.setEmpty(false);
-  BOOST_CHECK(!cell.isEmpty());
-
-  cell.setEmpty(true);
-  BOOST_CHECK(cell.isEmpty());
+  using namespace snake;
+  
+  // act 
+  GridCell cell;
+  
+  // assert
+  BOOST_CHECK(BOARD_CELL_TYPE::EMPTY == cell.type);
 }
 #endif  // !CASE_1
 
 #if CASE_2
 BOOST_AUTO_TEST_CASE(case2) {
   // arrange
+  using namespace snake;
   snake::GridCell cell;
 
-  // act && assert
+  // act 
+  cell.setPlayer(0, Direction::LEFT, Direction::LEFT);
 
-  std::cout << std::bitset<8>(cell.data) << std::endl;
-
-  cell.setPlayer(0, snake::Direction::LEFT, snake::Direction::LEFT);
-  std::cout << std::bitset<8>(cell.data) << std::endl;
-  BOOST_CHECK_EQUAL(0, cell.getPlayerId());
-  BOOST_CHECK(snake::Direction::LEFT == cell.getDir());
-  BOOST_CHECK(snake::Direction::LEFT == cell.getPrev());
-
-  cell.setPlayer(1, snake::Direction::UP, snake::Direction::UP);
-  std::cout << std::bitset<8>(cell.data) << std::endl;
-  BOOST_CHECK_EQUAL(1, cell.getPlayerId());
-  BOOST_CHECK(snake::Direction::UP == cell.getDir());
-  BOOST_CHECK(snake::Direction::UP == cell.getPrev());
-
-  cell.setPlayer(0, snake::Direction::LEFT, snake::Direction::LEFT);
-  std::cout << std::bitset<8>(cell.data) << std::endl;
-  BOOST_CHECK_EQUAL(0, cell.getPlayerId());
-  BOOST_CHECK(snake::Direction::LEFT == cell.getDir());
-  BOOST_CHECK(snake::Direction::LEFT == cell.getPrev());
-
-  cell.setPlayer(1, snake::Direction::RIGHT, snake::Direction::RIGHT);
-  std::cout << std::bitset<8>(cell.data) << std::endl;
-  BOOST_CHECK_EQUAL(1, cell.getPlayerId());
-  BOOST_CHECK(snake::Direction::RIGHT == cell.getDir());
-  BOOST_CHECK(snake::Direction::RIGHT == cell.getPrev());
-
-  cell.setPlayer(0, snake::Direction::BOTTOM, snake::Direction::BOTTOM);
-  std::cout << std::bitset<8>(cell.data) << std::endl;
-  BOOST_CHECK_EQUAL(0, cell.getPlayerId());
-  BOOST_CHECK(snake::Direction::BOTTOM == cell.getDir());
-  BOOST_CHECK(snake::Direction::BOTTOM == cell.getPrev());
+  //assert
+  BOOST_CHECK(BOARD_CELL_TYPE::PLAYER == cell.type);
+  BOOST_CHECK_EQUAL(0, cell.player_id);
+  BOOST_CHECK(snake::Direction::LEFT == cell.next);
+  BOOST_CHECK(snake::Direction::LEFT == cell.prev);
 }
 #endif  // !CASE_2
 
 #if CASE_3
 BOOST_AUTO_TEST_CASE(case3) {
   // arrange
+  using namespace snake;
   snake::GridCell cell;
 
-  // act && assert
-  std::cout << std::bitset<8>(cell.data) << std::endl;
-  BOOST_CHECK(cell.isNextApple());
-  BOOST_CHECK(!cell.isApple());
+  // act
+  cell.setPlayer(0, Direction::LEFT, Direction::LEFT);
+  cell.removePlayer();
 
-  cell.setCurrApple();
-  std::cout << std::bitset<8>(cell.data) << std::endl;
-  BOOST_CHECK(cell.isApple());
-  BOOST_CHECK(!cell.isNextApple());
-
-  cell.setPrevApple();
-  std::cout << std::bitset<8>(cell.data) << std::endl;
-  BOOST_CHECK(!cell.isApple());
-  BOOST_CHECK(!cell.isNextApple());
+  // assert
+  BOOST_CHECK(BOARD_CELL_TYPE::EMPTY == cell.type);
 }
 #endif  // !CASE_3
+
+#if CASE_4
+BOOST_AUTO_TEST_CASE(case4) {
+  // arrange
+  using namespace snake;
+  snake::GridCell cell;
+
+  // act
+  cell.placeApple();
+
+  // assert
+  BOOST_CHECK(BOARD_CELL_TYPE::APPLE == cell.type);
+}
+#endif  // !CASE_4
+
+#if CASE_5
+BOOST_AUTO_TEST_CASE(case5) {
+  // arrange
+  using namespace snake;
+  snake::GridCell cell;
+
+  // act
+  cell.placeApple();
+  cell.pickupApple();
+
+  // assert
+  BOOST_CHECK(BOARD_CELL_TYPE::EMPTY == cell.type);
+}
+#endif  // !CASE_5

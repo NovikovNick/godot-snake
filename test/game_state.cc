@@ -17,130 +17,56 @@
 #include "../src/model/snake_game_api.h"
 #include "../src/util/log.h"
 
+using namespace snake;
+
 void print(const snake::GameState& gs) {
-  util::debug("-------------------\n");
-  int width = snake::GameState::width;
-  int height = snake::GameState::height;
+  util::debug("=================== \n");
+  int width = gs.width;
+  int height = gs.height;
   for (int i = 0; i < width * height; ++i) {
     auto row = i / width;
     auto col = i % width;
 
-    auto sign = "";
-    switch (gs.getCellTailIndex(col, row)) {
-      case snake::TILE_INDEX::EMPTY:
-        sign = " ";
-        break;
-      case snake::TILE_INDEX::APPLE:
-        sign = "A";
-        break;
-      case snake::TILE_INDEX::BODY_HOR_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::BODY_VER_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::HEAD_TOP_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::HEAD_BTM_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::HEAD_LFT_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::HEAD_RHT_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::TAIL_TOP_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::TAIL_BTM_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::TAIL_LFT_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::TAIL_RHT_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::TURN_TL_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::TURN_TR_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::TURN_BL_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::TURN_BR_P1:
-        sign = "1";
-        break;
-      case snake::TILE_INDEX::BODY_HOR_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::BODY_VER_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::HEAD_BTM_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::HEAD_LFT_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::TAIL_TOP_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::TAIL_BTM_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::TAIL_LFT_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::TAIL_RHT_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::TURN_TR_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::TURN_BL_P2:
-        sign = "2";
-        break;
-      case snake::TILE_INDEX::TURN_BR_P2:
-        sign = "2";
-        break;
-    }
+    auto tile = gs.getTile(col, row);
+
+    auto sign = "_";
+    if (tile.type == snake::BOARD_CELL_TYPE::APPLE) sign = "A";
+    if (tile.type == snake::BOARD_CELL_TYPE::PLAYER)
+      sign = tile.player_id == 0 ? "1" : "2";
+
     util::debug("{} ", sign);
     if ((col) == (width - 1)) util::debug("\n");
   }
 };
 
-void assertGrid(const snake::GameState& gs,
-                const std::vector<std::pair<int, int>>& p0,
-                const std::vector<std::pair<int, int>>& p1,
-                const std::pair<int, int> apple){
-    /*std::vector<char> expected_grid(gs.width * gs.height, ' ');
-    for (const auto [x, y] : p0) expected_grid[gs.width * y + x] = '0';
-    for (const auto [x, y] : p1) expected_grid[gs.width * y + x] = '1';
-    expected_grid[gs.width * apple.second + apple.first] = 'a';
+void assertGrid(const GameState& gs,
+                const std::vector<std::tuple<int, int, TILE_INDEX>>& p0,
+                const std::vector<std::tuple<int, int, TILE_INDEX>>& p1,
+                const std::pair<int, int> apple) {
+  std::vector<TILE_INDEX> expected_grid(gs.width * gs.height,
+                                        TILE_INDEX::EMPTY);
+  for (const auto [x, y, index] : p0) expected_grid[gs.width * y + x] = index;
+  for (const auto [x, y, index] : p1) expected_grid[gs.width * y + x] = index;
+  expected_grid[gs.width * apple.second + apple.first] = TILE_INDEX::APPLE;
 
-    for (int i = 0; i < gs.n * gs.n; ++i) {
-      int row = i / gs.n;
-      int col = i % gs.n;
-      switch (expected_grid[i]) {
-        case '0':
-          BOOST_TEST_INFO(std::format("expected player 0 at[{}, {}]", col,
-    row)); BOOST_CHECK(gs.grid[i].isPlayer() && gs.grid[i].isPlayer(0)); break;
-        case '1':
-          BOOST_TEST_INFO(std::format("expected player 1 at[{}, {}]", col,
-    row)); BOOST_CHECK(gs.grid[i].isPlayer() && gs.grid[i].isPlayer(1)); break;
-        case 'a':
-          BOOST_TEST_INFO(std::format("expected an apple at[{}, {}]", col,
-    row)); BOOST_CHECK(gs.grid[i].isApple()); break; default:
-          BOOST_TEST_INFO(std::format("expected empty at[{}, {}]", col, row));
-          BOOST_CHECK(gs.grid[i].isEmpty());
-          break;
-      }
-    }*/
+  for (int i = 0; i < gs.width * gs.height; ++i) {
+    int row = i / gs.width;
+    int col = i % gs.width;
+
+    switch (expected_grid[i]) {
+      case TILE_INDEX::APPLE:
+        BOOST_TEST_INFO(std::format("expected an apple at[{}, {}]", col, row));
+        BOOST_CHECK(gs.getTile(col, row).type == BOARD_CELL_TYPE::APPLE);
+        break;
+      case TILE_INDEX::EMPTY:
+        BOOST_TEST_INFO(std::format("expected empty at[{}, {}]", col, row));
+        BOOST_CHECK(gs.getTile(col, row).type == BOARD_CELL_TYPE::EMPTY);
+        break;
+      default:
+        BOOST_TEST_INFO(std::format("expected player  at[{}, {}]", col, row));
+        BOOST_CHECK(gs.getTile(col, row).type == BOARD_CELL_TYPE::PLAYER);
+    }
+  }
 };
 
 #if CASE_1
@@ -149,10 +75,16 @@ BOOST_AUTO_TEST_CASE(case1) {
   using namespace snake;
   GameState gs;
   GameSettings setting;
-  setting.fst_player_head = Coord{4, 1};
-  setting.fst_player_tail = Coord{1, 1};
-  setting.snd_player_head = Coord{4, 9};
-  setting.snd_player_tail = Coord{1, 9};
+  setting.width = 10;
+  setting.height = 10;
+  setting.fst_player = {{1, 4, Direction::BOTTOM, Direction::UP},
+                        {1, 3, Direction::BOTTOM, Direction::UP},
+                        {1, 2, Direction::BOTTOM, Direction::UP},
+                        {1, 1, Direction::BOTTOM, Direction::NONE}};
+  setting.snd_player = {{9, 4, Direction::BOTTOM, Direction::UP},
+                        {9, 3, Direction::BOTTOM, Direction::UP},
+                        {9, 2, Direction::BOTTOM, Direction::UP},
+                        {9, 1, Direction::BOTTOM, Direction::NONE}};
   setting.apple = Coord{8, 8};
 
   // act
@@ -161,10 +93,23 @@ BOOST_AUTO_TEST_CASE(case1) {
   // assert
   print(gs);
 
-  /*print(dynamic_cast<snake::GameState&>(api));
-  assertGrid(dynamic_cast<snake::GameState&>(api),
-             {{1, 1}, {2, 1}, {3, 1}, {4, 1}}, {{1, 9}, {2, 9}, {3, 9}, {4, 9}},
-             {8, 8});*/
+  // TODO: make grid cell as board cell with fields and refactor directions
+  // TODO: find place for new apple
+  // TODO: change game status after move
+
+  assertGrid(gs,
+             {
+              {1, 1, TILE_INDEX::TAIL_TOP},
+              {1, 2, TILE_INDEX::TAIL_TOP},
+              {1, 3, TILE_INDEX::TAIL_TOP},
+              {1, 4, TILE_INDEX::TAIL_TOP}},
+             {
+              {9, 1, TILE_INDEX::TAIL_TOP},
+              {9, 2, TILE_INDEX::TAIL_TOP},
+              {9, 3, TILE_INDEX::TAIL_TOP},
+              {9, 4, TILE_INDEX::TAIL_TOP}
+             },
+             {8, 8});
 }
 #endif  // !CASE_1
 

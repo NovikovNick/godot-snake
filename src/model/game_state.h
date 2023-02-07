@@ -1,6 +1,7 @@
 #ifndef SNAKE_GAME_STATE_H_
 #define SNAKE_GAME_STATE_H_
 #include <iostream>
+#include <vector>
 
 #include "grid_cell.h"
 #include "snake_game_api.h"
@@ -8,45 +9,47 @@
 namespace snake {
 
 struct Coord {
-  int row, col;
+  int col, row;
 };
 
 struct GameSettings {
-  Coord fst_player_head, fst_player_tail;
-  Coord snd_player_head, snd_player_tail;
+  uint8_t width, height;
+  std::vector<std::tuple<int, int, Direction, Direction>> fst_player;
+  std::vector<std::tuple<int, int, Direction, Direction>> snd_player;
   Coord apple;
 };
 
 struct Player final {
-  Coord head, tail;
+  Coord head;
   uint8_t score;
-  Player(Coord head, Coord tail) : head(head), tail(tail), score(0){};
-  Player() : Player({0, 0}, {0, 0}){};
+  Player(Coord head) : head(head), score(0){};
+  Player() : Player({0, 0}){};
 };
 
 class GameState : public SnakeGameAPI {
  public:
-  const static int width = 10;
-  const static int height = 10;
   const static int player_count = 2;
+  int framenumber, width, height;
 
   void init(const GameSettings& settings);
   void init() override;
   void move(const int player_id) override;
-  TILE_INDEX getCellTailIndex(const int row, const int col) const override;
-  void getGameState() const override;
-  void update(const int fst_player_input, const int snd_player_input,
-              int disconnect_flags) override;
+  Tile getTile(const int col, const int row) const override;
+  GAME_STATUS getGameState() const override;
+  void update(const Direction fst_player_input,
+              const Direction snd_player_input, int disconnect_flags) override;
 
  private:
-  GridCell grid[width * height];
+  std::vector<GridCell> grid;
   Player players[player_count];
-  uint8_t status;
-  int _framenumber;
+  GAME_STATUS status;
 
-  Coord move(const Coord pos, const snake::Direction dir);
+  Coord move(const Coord pos, const Direction dir);
   GridCell& getCell(const Coord coord);
-  void initPlayers();
+  void moveTail(const int player_id);
+  void initPlayer(
+      const int player_id,
+      const std::vector<std::tuple<int, int, Direction, Direction>>& segments);
 };
 }  // namespace snake
 
