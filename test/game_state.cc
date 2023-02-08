@@ -29,13 +29,13 @@ void print(const snake::GameState& gs) {
 
     auto tile = gs.getTile(col, row);
 
-    auto sign = "_";
+    std::string sign = "_";
     if (tile.type == snake::BOARD_CELL_TYPE::APPLE) sign = "A";
     if (tile.type == snake::BOARD_CELL_TYPE::PLAYER)
-      sign = tile.player_id == 0 ? "1" : "2";
+      sign = std::format("{}", static_cast<int>(tile.index));
 
     util::debug("{} ", sign);
-    if ((col) == (width - 1)) util::debug("\n");
+    if (col == (width - 1)) util::debug("\n");
   }
 };
 
@@ -89,26 +89,24 @@ BOOST_AUTO_TEST_CASE(case1) {
 
   // act
   gs.init(setting);
+  gs.move(0);
+
 
   // assert
   print(gs);
 
-  // TODO: make grid cell as board cell with fields and refactor directions
   // TODO: find place for new apple
   // TODO: change game status after move
 
   assertGrid(gs,
-             {
-              {1, 1, TILE_INDEX::TAIL_TOP},
+             {{1, 1, TILE_INDEX::TAIL_TOP},
               {1, 2, TILE_INDEX::TAIL_TOP},
               {1, 3, TILE_INDEX::TAIL_TOP},
               {1, 4, TILE_INDEX::TAIL_TOP}},
-             {
-              {9, 1, TILE_INDEX::TAIL_TOP},
+             {{9, 1, TILE_INDEX::TAIL_TOP},
               {9, 2, TILE_INDEX::TAIL_TOP},
               {9, 3, TILE_INDEX::TAIL_TOP},
-              {9, 4, TILE_INDEX::TAIL_TOP}
-             },
+              {9, 4, TILE_INDEX::TAIL_TOP}},
              {8, 8});
 }
 #endif  // !CASE_1

@@ -1,5 +1,7 @@
 #include "game_state.h"
 
+#include <unordered_map>
+
 #include "../util/log.h"
 #include "grid_cell.h"
 
@@ -30,24 +32,23 @@ inline GridCell& GameState::getCell(const Coord coord) {
   return grid[coord.row * GameState::width + coord.col];
 }
 
-void GameState::moveTail(const int player_id) {
-  Coord tail_coord = players[player_id].head;
-  Coord prev_coord = tail_coord;
-  while (!getCell(tail_coord).isTail()) {
-    prev_coord = tail_coord;
-    tail_coord = move(tail_coord, getCell(tail_coord).prev);
-  };
-  getCell(prev_coord).setTail();
-  getCell(tail_coord).removePlayer();
-}
-
 void GameState::initPlayer(
     const int id,
     const std::vector<std::tuple<int, int, Direction, Direction>>& segments) {
-  for (int i = 0; i < segments.size(); ++i) {
+  int n = segments.size();
+  for (int i = 0; i < n; ++i) {
     auto [col, row, next, prev] = segments[i];
-    if (i == 0) players[id] = Player({col, row});
-    getCell({col, row}).setPlayer(id, next, prev);
+    auto& cell = getCell({col, row});
+    if (i == 0) {
+      players[id] = Player({col, row});
+      cell.setHead(id, next, prev);
+    } else if (i == n - 1) {
+      cell.setPlayer(id, next, prev);
+      cell.setTail();
+    } else {
+      cell.setPlayer(id, next, prev);
+      cell.tile = TileIndexUtil::getTurnTileIndex(next, prev);
+    }
   }
 }
 
@@ -59,7 +60,9 @@ void GameState::move(const int player_id) {
   auto next_head_coord = move(head_coord, head_cell.next);
   auto& next_head_cell = getCell(next_head_coord);
 
-  next_head_cell.setPlayer(player_id, head_cell.next, apposite(head_cell.next));
+  head_cell.tile =
+      TileIndexUtil::getTurnTileIndex(head_cell.next, head_cell.prev);
+  next_head_cell.setHead(player_id, head_cell.next, apposite(head_cell.next));
 
   if (next_head_cell.isApple()) {
     next_head_cell.pickupApple();
@@ -68,6 +71,17 @@ void GameState::move(const int player_id) {
   }
 
   head_coord = next_head_coord;
+}
+
+void GameState::moveTail(const int player_id) {
+  Coord tail_coord = players[player_id].head;
+  Coord prev_coord = tail_coord;
+  while (!getCell(tail_coord).isTail()) {
+    prev_coord = tail_coord;
+    tail_coord = move(tail_coord, getCell(tail_coord).prev);
+  };
+  getCell(prev_coord).setTail();
+  getCell(tail_coord).removePlayer();
 }
 
 void GameState::init(const GameSettings& settings) {
@@ -100,8 +114,8 @@ void GameState::init() {
 Tile GameState::getTile(const int col, const int row) const {
   auto cell = grid[row * GameState::width + col];
   if (cell.isApple()) return Tile::apple();
-  if (cell.isPlayer(0)) return Tile::player(0, TILE_INDEX::BODY_HOR);
-  if (cell.isPlayer(1)) return Tile::player(1, TILE_INDEX::BODY_HOR);
+  if (cell.isPlayer(0)) return Tile::player(0, cell.tile);
+  if (cell.isPlayer(1)) return Tile::player(1, cell.tile);
   return Tile::empty();
 }
 
@@ -116,7 +130,7 @@ void GameState::update(const Direction fst_player_input,
     getCell(players[1].head).next = snd_player_input;
 }
 
-Coord GameState::move(const Coord pos, Direction dir) {
+Coord GameState::move(const Coord pos, const Direction dir) {
   switch (dir) {
     case snake::Direction::UP:
       return (pos.row == 0) ? Coord{pos.col, GameState::height - 1}
@@ -128,7 +142,7 @@ Coord GameState::move(const Coord pos, Direction dir) {
       return (pos.col == 0) ? Coord{GameState::width - 1, pos.row}
                             : Coord{pos.col - 1, pos.row};
     case snake::Direction::RIGHT:
-      return (pos.col == GameState::width - 1) ? Coord{0, pos.col}
+      return (pos.col == GameState::width - 1) ? Coord{0, pos.row}
                                                : Coord{pos.col + 1, pos.row};
     default:
       throw std::invalid_argument("no such direction");

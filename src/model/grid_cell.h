@@ -3,27 +3,23 @@
 #include <iostream>
 
 #include "board_cell_type.h"
+#include "direction.h"
+#include "tile.h"
+#include "tile_index_util.h"
 
 namespace snake {
-
-enum class Direction : std::uint8_t {
-  NONE = 0,
-  UP = 1,
-  LEFT = 2,
-  RIGHT = 3,
-  BOTTOM = 4
-};
 
 struct GridCell final {
   Direction next, prev;
   BOARD_CELL_TYPE type;
   uint8_t player_id;
   bool can_be_apple;
+  TILE_INDEX tile;
 
   GridCell();
   GridCell(const Direction next, const Direction prev,
-           const BOARD_CELL_TYPE type, const uint8_t player_id,
-           const bool can_be_apple);
+           const BOARD_CELL_TYPE type, const TILE_INDEX tile,
+           const uint8_t player_id, const bool can_be_apple);
 
   bool isApple() const;
   bool isPlayer(const uint8_t id) const;
@@ -31,6 +27,7 @@ struct GridCell final {
   void removePlayer();
   void placeApple();
   void pickupApple();
+  void setHead(const uint8_t id, Direction dir, Direction prev);
   void setPlayer(const uint8_t id, Direction dir, Direction prev);
   void setTail();
 };

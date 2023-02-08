@@ -3,14 +3,12 @@
 #include <iostream>
 #include <vector>
 
+#include "coord.h"
+#include "direction.h"
 #include "grid_cell.h"
 #include "snake_game_api.h"
 
 namespace snake {
-
-struct Coord {
-  int col, row;
-};
 
 struct GameSettings {
   uint8_t width, height;

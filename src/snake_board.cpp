@@ -5,12 +5,17 @@
 using namespace godot;
 
 void Board::_register_methods() {
-  godot::register_method("get_cell_tile_index",
-                         &godot::Board::get_cell_tile_index);
+  godot::register_method("get_cell", &godot::Board::get_cell);
+  godot::register_method("start", &godot::Board::start);
+  godot::register_method("move", &godot::Board::move);
 }
 
-void Board::_init() {}
+void Board::_init() { api = std::make_unique<snake::GameState>(); }
 
-int Board::get_cell_tile_index(const int x, const int y) {
-  return static_cast<int>(snake::TILE_INDEX::APPLE);
+int Board::get_cell(const int x, const int y) {
+  return static_cast<int>(api->getTile(x, y).index);
 }
+
+void Board::start() { api->init(); }
+
+void Board::move(const int player_id) { api->move(player_id); }
