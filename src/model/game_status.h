@@ -4,11 +4,12 @@
 namespace snake {
 
 enum class GAME_STATUS {
-  PLAYING = 0,
+  STOPED = 0,
   FST_PLAYER_REACHED_SCORE = 1,
   SND_PLAYER_REACHED_SCORE = 2,
   FST_PLAYER_COLLIDED = 3,
-  SND_PLAYER_COLLIDED = 4
+  SND_PLAYER_COLLIDED = 4,
+  PLAYING = 5
 };
 
 }  // namespace snake

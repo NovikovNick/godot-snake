@@ -89,11 +89,16 @@ BOOST_AUTO_TEST_CASE(case1) {
 
   // act
   gs.init(setting);
-  gs.move(0);
+
+  for (int i = 0; i < 7; ++i) {
+      // assert
+    print(gs);
+    // act
+    gs.move(0);
+  }
+ 
 
 
-  // assert
-  print(gs);
 
   // TODO: find place for new apple
   // TODO: change game status after move

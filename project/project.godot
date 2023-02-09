@@ -14,6 +14,11 @@ config/name="snake"
 run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
 
+[display]
+
+window/size/width=640
+window/size/height=640
+
 [input]
 
 move_up={

@@ -84,6 +84,13 @@ void GameState::moveTail(const int player_id) {
   getCell(tail_coord).removePlayer();
 }
 
+GameState::GameState()
+    : framenumber(0),
+      width(10),
+      height(10),
+      grid(std::vector<GridCell>(100)),
+      status(GAME_STATUS::STOPED) {}
+
 void GameState::init(const GameSettings& settings) {
   framenumber = 0;
   width = settings.width;
@@ -99,6 +106,8 @@ void GameState::init(const GameSettings& settings) {
 
 void GameState::init() {
   GameSettings setting;
+  setting.width = 10;
+  setting.height = 10;
   setting.fst_player = {{1, 4, Direction::BOTTOM, Direction::UP},
                         {1, 3, Direction::BOTTOM, Direction::UP},
                         {1, 2, Direction::BOTTOM, Direction::UP},

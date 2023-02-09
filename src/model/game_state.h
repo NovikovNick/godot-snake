@@ -28,7 +28,7 @@ class GameState : public SnakeGameAPI {
  public:
   const static int player_count = 2;
   int framenumber, width, height;
-
+  GameState();
   void init(const GameSettings& settings);
   void init() override;
   void move(const int player_id) override;
