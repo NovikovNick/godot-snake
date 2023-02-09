@@ -5,6 +5,7 @@
 #include <Sprite.hpp>
 
 #include "model/snake_game_api.h"
+#include "model/game_state.h"
 
 namespace godot {
 
@@ -18,11 +19,13 @@ class Board : public godot::Reference {
 
   void _init();
 
-  int get_cell(const int x, const int y);
+  int getCell(const int x, const int y);
 
-  int start();
+  void start();
 
-  int move(const int player_id);
+  void move(const int player_id);
+
+  void updateInput(const int dir);
 };
 }  // namespace godot
 

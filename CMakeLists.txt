@@ -12,7 +12,7 @@ add_definitions( -DBOOST_ALL_DYN_LINK )
    
 include_directories(${Boost_INCLUDE_DIRS})
 
-#file(GLOB GODOT_BIND "./src/*.h" "./src/*.cc")
+file(GLOB GODOT_BIND "./src/*.h" "./src/*.cpp")
 file(GLOB SNAKE_SRC "./src/model/*.h" "./src/model/*.cc")
 file(GLOB UTIL "./src/util/*.h" "./src/util/*.cc")
 

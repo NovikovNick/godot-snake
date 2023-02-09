@@ -34,8 +34,9 @@ class GameState : public SnakeGameAPI {
   void move(const int player_id) override;
   Tile getTile(const int col, const int row) const override;
   GAME_STATUS getGameState() const override;
-  void update(const Direction fst_player_input,
-              const Direction snd_player_input, int disconnect_flags) override;
+  void updateInput(const Direction fst_player_input,
+                   const Direction snd_player_input,
+                   int disconnect_flags) override;
 
  private:
   std::vector<GridCell> grid;

@@ -121,8 +121,9 @@ Tile GameState::getTile(const int col, const int row) const {
 
 GAME_STATUS GameState::getGameState() const { return GAME_STATUS::PLAYING; }
 
-void GameState::update(const Direction fst_player_input,
-                       const Direction snd_player_input, int disconnect_flags) {
+void GameState::updateInput(const Direction fst_player_input,
+                            const Direction snd_player_input,
+                            int disconnect_flags) {
   if (fst_player_input != Direction::NONE)
     getCell(players[0].head).next = fst_player_input;
 

@@ -76,7 +76,7 @@ elif env['platform'] == "windows":
 
     env.Append(CPPDEFINES=['WIN32', '_WIN32', '_WINDOWS', '_CRT_SECURE_NO_WARNINGS'])
     env.Append(CCFLAGS=['-W3', '-GR'])
-    env.Append(CXXFLAGS='/std:c++17')
+    env.Append(CXXFLAGS='/std:c++20')
     if env['target'] in ('debug', 'd'):
         env.Append(CPPDEFINES=['_DEBUG'])
         env.Append(CCFLAGS=['-EHsc', '-MDd', '-ZI'])
@@ -98,8 +98,10 @@ env.Append(LIBPATH=[cpp_bindings_path + 'bin/'])
 env.Append(LIBS=[cpp_library])
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
-env.Append(CPPPATH=['src/'])
+env.Append(CPPPATH=['src/', 'src/model/'])
+
 sources = Glob('src/*.cpp')
+sources += Glob('src/*/*.cc')
 
 library = env.SharedLibrary(target=env['target_path'] + env['target_name'] , source=sources)
 
