@@ -20,7 +20,7 @@ struct hash<KEY> {
 namespace snake {
 
 TILE_INDEX TileIndexUtil::getTurnTileIndex(const Direction prev,
-                                                  const Direction next) {
+                                           const Direction next) {
   return tile_to_dir[{prev, next}];
 }
 
@@ -70,4 +70,3 @@ std::unordered_map<KEY, TILE_INDEX> TileIndexUtil::tile_to_dir = {
     {{Direction::RIGHT, Direction::UP}, TILE_INDEX::TURN_TR}};
 
 }  // namespace snake
-

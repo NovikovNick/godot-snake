@@ -11,7 +11,7 @@
 namespace snake {
 
 struct GameSettings {
-  uint8_t width, height;
+  uint8_t width, height, max_score;
   std::vector<std::tuple<int, int, Direction, Direction>> fst_player;
   std::vector<std::tuple<int, int, Direction, Direction>> snd_player;
   Coord apple;
@@ -27,13 +27,15 @@ struct Player final {
 class GameState : public SnakeGameAPI {
  public:
   const static int player_count = 2;
-  int framenumber, width, height;
+  int framenumber, width, height, max_score;
   GameState();
-  void init(const GameSettings& settings);
-  void init() override;
+  void start(const GameSettings& settings);
+  void start() override;
+  void stop() override;
   void move(const int player_id) override;
   Tile getTile(const int col, const int row) const override;
-  GAME_STATUS getGameState() const override;
+  GAME_STATUS getGameStatus() const override;
+  int getPlayerScore(const int player_id) const override;
   void updateInput(const Direction fst_player_input,
                    const Direction snd_player_input,
                    int disconnect_flags) override;
@@ -46,6 +48,7 @@ class GameState : public SnakeGameAPI {
   Coord move(const Coord pos, const Direction dir);
   GridCell& getCell(const Coord coord);
   void moveTail(const int player_id);
+  void placeApple();
   void initPlayer(
       const int player_id,
       const std::vector<std::tuple<int, int, Direction, Direction>>& segments);

@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE SolutionTest
-#define CASE_1 1
-#define CASE_2 0
+#define CASE_1 0
+#define CASE_2 1
 #define CASE_3 0
 #define CASE_4 0
 #define CASE_5 0
@@ -88,20 +88,14 @@ BOOST_AUTO_TEST_CASE(case1) {
   setting.apple = Coord{8, 8};
 
   // act
-  gs.init(setting);
-
-  for (int i = 0; i < 7; ++i) {
+  gs.start(setting);
+  gs.updateInput(Direction::RIGHT, Direction::NONE, 0);
+  for (int i = 0; i < 10; ++i) {
       // assert
     print(gs);
     // act
     gs.move(0);
   }
- 
-
-
-
-  // TODO: find place for new apple
-  // TODO: change game status after move
 
   assertGrid(gs,
              {{1, 1, TILE_INDEX::TAIL_TOP},
@@ -119,17 +113,42 @@ BOOST_AUTO_TEST_CASE(case1) {
 #if CASE_2
 BOOST_AUTO_TEST_CASE(case2) {
   // arrange
-  snake::GameState gs;
-  gs.Init();
+  using namespace snake;
+  GameState gs;
+  GameSettings setting;
+  setting.max_score = 10;
+  setting.width = 10;
+  setting.height = 10;
+  setting.fst_player = {{1, 4, Direction::BOTTOM, Direction::UP},
+                        {1, 3, Direction::BOTTOM, Direction::UP},
+                        {1, 2, Direction::BOTTOM, Direction::UP},
+                        {1, 1, Direction::BOTTOM, Direction::NONE}};
+  setting.snd_player = {{9, 4, Direction::BOTTOM, Direction::UP},
+                        {9, 3, Direction::BOTTOM, Direction::UP},
+                        {9, 2, Direction::BOTTOM, Direction::UP},
+                        {9, 1, Direction::BOTTOM, Direction::NONE}};
+  setting.apple = Coord{1, 8};
 
   // act
-  gs.Update(new int[]{static_cast<int>(snake::Direction::BOTTOM), -1}, 0);
-  gs.Move(0);
+  gs.start(setting);
+  for (int i = 0; i < 5; ++i) {
+    // assert
+    print(gs);
+    // act
+    gs.move(0);
+  }
+  util::debug("score is {}\n", gs.getPlayerScore(0));
 
-  // assert
-  print(gs);
-  assertGrid(gs, {{2, 1}, {3, 1}, {4, 1}, {4, 2}},
-             {{1, 9}, {2, 9}, {3, 9}, {4, 9}}, {8, 8});
+  assertGrid(gs,
+             {{1, 1, TILE_INDEX::TAIL_TOP},
+              {1, 2, TILE_INDEX::TAIL_TOP},
+              {1, 3, TILE_INDEX::TAIL_TOP},
+              {1, 4, TILE_INDEX::TAIL_TOP}},
+             {{9, 1, TILE_INDEX::TAIL_TOP},
+              {9, 2, TILE_INDEX::TAIL_TOP},
+              {9, 3, TILE_INDEX::TAIL_TOP},
+              {9, 4, TILE_INDEX::TAIL_TOP}},
+             {8, 8});
 }
 #endif  // !CASE_2
 

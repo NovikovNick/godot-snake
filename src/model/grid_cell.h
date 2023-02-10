@@ -26,6 +26,7 @@ struct GridCell final {
   bool isTail() const;
   void removePlayer();
   void placeApple();
+  bool canBeApple();
   void pickupApple();
   void setHead(const uint8_t id, Direction dir, Direction prev);
   void setPlayer(const uint8_t id, Direction dir, Direction prev);

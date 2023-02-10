@@ -23,7 +23,13 @@ class Board : public godot::Reference {
 
   void start();
 
+  void stop();
+
+  int getStatus();
+
   void move(const int player_id);
+
+  int getPlayerScore(const int player_id);
 
   void updateInput(const int dir);
 };

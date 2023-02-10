@@ -46,6 +46,10 @@ void GridCell::placeApple() {
   can_be_apple = false;
 }
 
+bool GridCell::canBeApple() {
+  return type == BOARD_CELL_TYPE::EMPTY && can_be_apple;
+}
+
 void GridCell::pickupApple() {
   type = BOARD_CELL_TYPE::EMPTY;
   tile = TILE_INDEX::EMPTY;
