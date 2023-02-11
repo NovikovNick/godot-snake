@@ -20,6 +20,7 @@ var PLAYING = 5;
 
 func _ready():
 	$SnakeTileMap.hide();
+	$HUD.hide();
 	$FstPlayerScore.text = ""
 	$SndPlayerScore.text = ""
 	$Menu.show();
@@ -30,9 +31,11 @@ func _process(delta):
 	if Input.is_action_pressed("escape"):
 		board.stop();
 		$Menu.show();
+		$Music.stop();
 		$FstPlayerScore.text = ""
 		$SndPlayerScore.text = ""
 		$GameResultLabel.hide();
+		$HUD.hide();
 		$SnakeTileMap.hide();
 	
 	if(!running):
@@ -44,8 +47,12 @@ func _process(delta):
 		if(status == FST_PLAYER_REACHED_SCORE):
 			$GameResultLabel.text = win_score_msg
 		if(status == FST_PLAYER_COLLIDED):
+			$DeathSound.play();
+			$Music.stop();
 			$GameResultLabel.text = lose_collision_msg
 		if(status == SND_PLAYER_REACHED_SCORE):
+			$DeathSound.play();
+			$Music.stop();
 			$GameResultLabel.text = lose_score_msg
 		if(status == SND_PLAYER_COLLIDED):
 			$GameResultLabel.text = win_collision_msg
@@ -82,7 +89,9 @@ func _on_Menu_single_game():
 	t0 = 0;
 	running = true;
 	$Menu.hide();
+	$Music.play();
 	$SnakeTileMap.show();
+	$HUD.show();
 	$FstPlayerScore.text = "0"
 	$SndPlayerScore.text = "0"
 
