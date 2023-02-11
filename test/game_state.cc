@@ -29,10 +29,10 @@ void print(const snake::GameState& gs) {
 
     auto tile = gs.getTile(col, row);
 
-    std::string sign = "_";
-    if (tile.type == snake::BOARD_CELL_TYPE::APPLE) sign = "A";
+    std::string sign = "  _";
+    if (tile.type == snake::BOARD_CELL_TYPE::APPLE) sign = "  A";
     if (tile.type == snake::BOARD_CELL_TYPE::PLAYER)
-      sign = std::format("{}", static_cast<int>(tile.index));
+      sign = std::format("{:3}", static_cast<int>(tile.index));
 
     util::debug("{} ", sign);
     if (col == (width - 1)) util::debug("\n");
@@ -127,17 +127,19 @@ BOOST_AUTO_TEST_CASE(case2) {
                         {9, 3, Direction::BOTTOM, Direction::UP},
                         {9, 2, Direction::BOTTOM, Direction::UP},
                         {9, 1, Direction::BOTTOM, Direction::NONE}};
-  setting.apple = Coord{1, 8};
+  setting.apple = Coord{8, 8};
 
   // act
   gs.start(setting);
-  for (int i = 0; i < 5; ++i) {
+  for (int i = 0; i < 100; ++i) {
     // assert
     print(gs);
     // act
+    gs.calculateInput(0);
     gs.move(0);
+    gs.calculateInput(1);
+    gs.move(1);
   }
-  util::debug("score is {}\n", gs.getPlayerScore(0));
 
   assertGrid(gs,
              {{1, 1, TILE_INDEX::TAIL_TOP},

@@ -1,5 +1,7 @@
 #ifndef SNAKE_DIRECTION_H_
 #define SNAKE_DIRECTION_H_
+#include <iostream>
+
 
 namespace snake {
 enum class Direction : std::uint8_t {

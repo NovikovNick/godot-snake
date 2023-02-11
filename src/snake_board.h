@@ -4,8 +4,8 @@
 #include <Godot.hpp>
 #include <Sprite.hpp>
 
-#include "model/snake_game_api.h"
 #include "model/game_state.h"
+#include "model/snake_game_api.h"
 
 namespace godot {
 
@@ -23,6 +23,8 @@ class Board : public godot::Reference {
 
   void start();
 
+  void startWithSettings(const int width, const int heiht, const int max_score);
+
   void stop();
 
   int getStatus();
@@ -31,7 +33,9 @@ class Board : public godot::Reference {
 
   int getPlayerScore(const int player_id);
 
-  void updateInput(const int dir);
+  void updateInput(const int player_id, const int dir);
+
+  void calculateInput(const int player_id);
 };
 }  // namespace godot
 

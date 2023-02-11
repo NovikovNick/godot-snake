@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "../util/log.h"
+#include "ai_util.h"
 #include "grid_cell.h"
 
 namespace {
@@ -23,11 +24,36 @@ snake::Direction apposite(snake::Direction dir) {
   }
 }
 
-snake::Direction dir(const snake::Coord from, const snake::Coord to) {}
+snake::GameSettings getDefaultGameSetting() {
+  using namespace snake;
+  GameSettings setting;
+  setting.width = 10;
+  setting.height = 10;
+  setting.max_score = 10;
+  setting.fst_player = {{1, 4, Direction::BOTTOM, Direction::UP},
+                        {1, 3, Direction::BOTTOM, Direction::UP},
+                        {1, 2, Direction::BOTTOM, Direction::UP},
+                        {1, 1, Direction::BOTTOM, Direction::NONE}};
+  setting.snd_player = {{9, 4, Direction::BOTTOM, Direction::UP},
+                        {9, 3, Direction::BOTTOM, Direction::UP},
+                        {9, 2, Direction::BOTTOM, Direction::UP},
+                        {9, 1, Direction::BOTTOM, Direction::NONE}};
+  setting.apple = Coord{8, 8};
+  return setting;
+}
 
 }  // namespace
 
 namespace snake {
+
+GameState::GameState()
+    : framenumber(0),
+      width(10),
+      height(10),
+      grid(std::vector<GridCell>(100)),
+      max_score(10),
+      status(GAME_STATUS::STOPED),
+      apple(Coord{0, 0}) {}
 
 inline GridCell& GameState::getCell(const Coord coord) {
   return grid[coord.row * GameState::width + coord.col];
@@ -87,17 +113,20 @@ void GameState::move(const int player_id) {
 }
 
 void GameState::placeApple() {
-  std::random_device rd;  // non-deterministic generator
+  // TODO: make apple generation deterministic
+
+  std::random_device rd;
   std::mt19937 gen(rd());
-  
+
   int row_gen = gen() % height;
   int col_gen = gen() % width;
 
   for (int row = row_gen; row < height; ++row) {
     for (int col = col_gen; col < width; ++col) {
-      auto& cell = getCell({row, col});
+      auto& cell = getCell({col, row});
       if (cell.canBeApple()) {
         cell.placeApple();
+        apple = {col, row};
         return;
       }
     }
@@ -105,9 +134,10 @@ void GameState::placeApple() {
 
   for (int row = 0; row < row_gen; ++row) {
     for (int col = 0; col < col_gen; ++col) {
-      auto& cell = getCell({row, col});
+      auto& cell = getCell({col, row});
       if (cell.canBeApple()) {
         cell.placeApple();
+        apple = {col, row};
         return;
       }
     }
@@ -125,13 +155,18 @@ void GameState::moveTail(const int player_id) {
   getCell(tail_coord).removePlayer();
 }
 
-GameState::GameState()
-    : framenumber(0),
-      width(10),
-      height(10),
-      grid(std::vector<GridCell>(100)),
-      max_score(10),
-      status(GAME_STATUS::STOPED) {}
+void GameState::start() {
+  GameSettings setting = getDefaultGameSetting();
+  start(setting);
+}
+
+void GameState::start(const int width, const int height, const int max_score) {
+  GameSettings setting = getDefaultGameSetting();
+  setting.width = width;
+  setting.height = height;
+  setting.max_score = max_score;
+  start(setting);
+}
 
 void GameState::start(const GameSettings& settings) {
   framenumber = 0;
@@ -142,26 +177,15 @@ void GameState::start(const GameSettings& settings) {
 
   initPlayer(0, settings.fst_player);
   initPlayer(1, settings.snd_player);
+
+  apple = settings.apple;
   getCell(settings.apple).placeApple();
 
   status = GAME_STATUS::PLAYING;
 }
 
-void GameState::start() {
-  GameSettings setting;
-  setting.width = 10;
-  setting.height = 10;
-  setting.max_score = 10;
-  setting.fst_player = {{1, 4, Direction::BOTTOM, Direction::UP},
-                        {1, 3, Direction::BOTTOM, Direction::UP},
-                        {1, 2, Direction::BOTTOM, Direction::UP},
-                        {1, 1, Direction::BOTTOM, Direction::NONE}};
-  setting.snd_player = {{9, 4, Direction::BOTTOM, Direction::UP},
-                        {9, 3, Direction::BOTTOM, Direction::UP},
-                        {9, 2, Direction::BOTTOM, Direction::UP},
-                        {9, 1, Direction::BOTTOM, Direction::NONE}};
-  setting.apple = Coord{8, 8};
-  start(setting);
+bool GameState::isEmpty(const Coord coord) const {
+  return grid[coord.row * width + coord.col].type == BOARD_CELL_TYPE::EMPTY;
 }
 
 void GameState::stop() { status = GAME_STATUS::STOPED; }
@@ -180,14 +204,13 @@ int GameState::getPlayerScore(const int player_id) const {
   return players[player_id].score;
 }
 
-void GameState::updateInput(const Direction fst_player_input,
-                            const Direction snd_player_input,
-                            int disconnect_flags) {
-  if (fst_player_input != Direction::NONE)
-    getCell(players[0].head).next = fst_player_input;
+void GameState::calculateInput(const int player_id) {
+  updateInput(player_id, AIUtil::aStar(players[player_id].head, *this), 0);
+}
 
-  if (snd_player_input != Direction::NONE)
-    getCell(players[1].head).next = snd_player_input;
+void GameState::updateInput(const int player_id, const Direction input,
+                            const int disconnect_flags) {
+  if (input != Direction::NONE) getCell(players[player_id].head).next = input;
 }
 
 Coord GameState::move(const Coord pos, const Direction dir) {

@@ -54,29 +54,31 @@ func _process(delta):
 		return;
 
 	if Input.is_action_pressed("move_up"):
-		board.update_input(1)
+		board.update_input(0, 1)
 	if Input.is_action_pressed("move_left"):
-		board.update_input(2)
+		board.update_input(0, 2)
 	if Input.is_action_pressed("move_right"):
-		board.update_input(3)
+		board.update_input(0, 3)
 	if Input.is_action_pressed("move_down"):
-		board.update_input(4)
+		board.update_input(0, 4)
 	
 
 	t0 += delta
-	if(t0 > 0.2):
+	if(t0 > 0.1):
+		#board.calculate_input(0);
 		board.move(0)
+		board.calculate_input(1);
 		board.move(1)
 		$FstPlayerScore.text = str(board.get_player_score(0))
 		$SndPlayerScore.text =  str(board.get_player_score(1))
 		t0 = 0;
 	
-	for row in range(10):
-		for col in range(10):
+	for row in range(20):
+		for col in range(20):
 			$SnakeTileMap.set_cell(col, row, board.get_cell(col, row));
 
 func _on_Menu_single_game():
-	board.start();
+	board.start_with_settings(20, 20, 100);
 	t0 = 0;
 	running = true;
 	$Menu.hide();

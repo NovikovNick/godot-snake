@@ -28,17 +28,21 @@ class GameState : public SnakeGameAPI {
  public:
   const static int player_count = 2;
   int framenumber, width, height, max_score;
+  Coord apple;
   GameState();
-  void start(const GameSettings& settings);
   void start() override;
+  void start(const int width, const int height, const int max_score) override;
   void stop() override;
   void move(const int player_id) override;
   Tile getTile(const int col, const int row) const override;
   GAME_STATUS getGameStatus() const override;
   int getPlayerScore(const int player_id) const override;
-  void updateInput(const Direction fst_player_input,
-                   const Direction snd_player_input,
-                   int disconnect_flags) override;
+  void calculateInput(const int player_id) override;
+  void updateInput(const int player_id, const Direction input,
+                   const int disconnect_flags) override;
+
+  void start(const GameSettings& settings);
+  bool isEmpty(const Coord coord) const;
 
  private:
   std::vector<GridCell> grid;
