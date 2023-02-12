@@ -32,11 +32,22 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="ScoreLabel" type="Label" parent="."]
+[node name="P1ScoreLabel" type="Label" parent="."]
 margin_left = 138.0
 margin_top = 691.0
-margin_right = 752.0
+margin_right = 354.0
 margin_bottom = 725.0
+rect_pivot_offset = Vector2( -459, -253 )
 custom_colors/font_color = Color( 1, 0.392157, 0, 1 )
 custom_fonts/font = SubResource( 8 )
-text = "Your score:              Bot score:"
+text = "hud.p0_score"
+
+[node name="P2ScoreLabel" type="Label" parent="."]
+margin_left = 422.0
+margin_top = 690.0
+margin_right = 631.0
+margin_bottom = 724.0
+rect_pivot_offset = Vector2( -459, -253 )
+custom_colors/font_color = Color( 1, 0.392157, 0, 1 )
+custom_fonts/font = SubResource( 8 )
+text = "hud.p1_score"

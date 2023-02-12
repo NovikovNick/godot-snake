@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/dio-wryyy.mp3-cc46a6a3c59d3c9d16a699151a541075.mp3str"
+
+[deps]
+
+source_file="res://resources/dio-wryyy.mp3"
+dest_files=[ "res://.import/dio-wryyy.mp3-cc46a6a3c59d3c9d16a699151a541075.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

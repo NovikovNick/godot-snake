@@ -6,10 +6,9 @@ onready var board = Board.new()
 
 var t0;
 var running = false;
-var win_collision_msg = "Win!";
-var lose_collision_msg = "Lose...";
-var win_score_msg = "Win!\nYou have reached\nthe score!";
-var lose_score_msg = "Lose...\nBot has reached\nthe score.";
+
+var l10n_key_win = "game_result.win";
+var l10n_key_lose = "game_result.lose";
 
 var STOPED = 0;
 var FST_PLAYER_REACHED_SCORE = 1;
@@ -21,6 +20,7 @@ var PLAYING = 5;
 func _ready():
 	$SnakeTileMap.hide();
 	$HUD.hide();
+	$GameResult.hide();
 	$FstPlayerScore.text = ""
 	$SndPlayerScore.text = ""
 	$Menu.show();
@@ -29,15 +29,18 @@ func _ready():
 func _process(delta):
 	
 	if Input.is_action_pressed("escape"):
+		$Music.stop();
+		$WinSound.stop();
+		$DeathSound.stop();
+		
 		board.stop();
 		$Menu.show();
-		$Music.stop();
 		$FstPlayerScore.text = ""
 		$SndPlayerScore.text = ""
-		$GameResultLabel.hide();
+		$GameResult.hide();
 		$HUD.hide();
 		$SnakeTileMap.hide();
-	
+
 	if(!running):
 		return;
 		
@@ -45,18 +48,23 @@ func _process(delta):
 	if (status != PLAYING):
 
 		if(status == FST_PLAYER_REACHED_SCORE):
-			$GameResultLabel.text = win_score_msg
+			$WinSound.play();
+			$Music.stop();
+			$GameResult.get_node("Message").text = l10n_key_win
+		if(status == SND_PLAYER_COLLIDED):
+			$WinSound.play();
+			$Music.stop();
+			$GameResult.get_node("Message").text = l10n_key_win
 		if(status == FST_PLAYER_COLLIDED):
 			$DeathSound.play();
 			$Music.stop();
-			$GameResultLabel.text = lose_collision_msg
+			$GameResult.get_node("Message").text = l10n_key_lose
 		if(status == SND_PLAYER_REACHED_SCORE):
 			$DeathSound.play();
 			$Music.stop();
-			$GameResultLabel.text = lose_score_msg
-		if(status == SND_PLAYER_COLLIDED):
-			$GameResultLabel.text = win_collision_msg
-		$GameResultLabel.show();
+			$GameResult.get_node("Message").text = l10n_key_lose
+			
+		$GameResult.show();
 		running = false;
 		return;
 
@@ -85,12 +93,19 @@ func _process(delta):
 			$SnakeTileMap.set_cell(col, row, board.get_cell(col, row));
 
 func _on_Menu_single_game():
+	if(running):
+		return;
 	board.start_with_settings(20, 20, 100);
 	t0 = 0;
 	running = true;
 	$Menu.hide();
+		
 	$Music.play();
+	$WinSound.stop();
+	$DeathSound.stop();
+	
 	$SnakeTileMap.show();
+	$GameResult.hide();
 	$HUD.show();
 	$FstPlayerScore.text = "0"
 	$SndPlayerScore.text = "0"

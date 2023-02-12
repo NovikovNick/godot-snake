@@ -3,6 +3,9 @@ extends Node2D
 signal single_game
 signal exit
 
+func _process(delta):
+	if Input.is_action_pressed("start_game"):
+		emit_signal("single_game");
 
 func _on_SinglePlayerButton_pressed():
 	emit_signal("single_game");

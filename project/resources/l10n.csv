@@ -1,0 +1,8 @@
+keys,en,ru
+game_result.win,"Win!","Победа!"
+game_result.lose,"Lose...","Поражение..."
+game_result.info,"Press ""R"" to restart\nPress ""ESC"" to return to the main menu","Нажмите ""R"" для рестарта\nНажмите ""ESC"" для возврата в меню"
+hud.p0_score,"Your score:", "  Ваш счет:"
+hud.p1_score,"     Bot score:",  "Противник:"
+menu.single_play, "SINGLE PLAY","Играть"
+menu.exit, "EXIT","Выход"

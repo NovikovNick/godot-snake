@@ -9,7 +9,7 @@
 
 namespace {
 
-snake::Direction apposite(snake::Direction dir) {
+snake::Direction opposite(snake::Direction dir) {
   switch (dir) {
     case snake::Direction::UP:
       return snake::Direction::BOTTOM;
@@ -107,7 +107,7 @@ void GameState::move(const int player_id) {
 
   head_cell.tile =
       TileIndexUtil::getTurnTileIndex(head_cell.next, head_cell.prev);
-  next_head_cell.setHead(player_id, head_cell.next, apposite(head_cell.next));
+  next_head_cell.setHead(player_id, head_cell.next, opposite(head_cell.next));
 
   head_coord = next_head_coord;
 }
@@ -210,7 +210,10 @@ void GameState::calculateInput(const int player_id) {
 
 void GameState::updateInput(const int player_id, const Direction input,
                             const int disconnect_flags) {
-  if (input != Direction::NONE) getCell(players[player_id].head).next = input;
+  if (input != Direction::NONE) {
+    auto& prev_dir = getCell(players[player_id].head).next;
+    if (opposite(prev_dir) != input) prev_dir = input;
+  }
 }
 
 Coord GameState::move(const Coord pos, const Direction dir) {
